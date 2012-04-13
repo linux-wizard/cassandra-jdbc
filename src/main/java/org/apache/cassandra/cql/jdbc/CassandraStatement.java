@@ -185,7 +185,7 @@ class CassandraStatement extends AbstractStatement implements Statement, Compara
         }
         catch (TimedOutException e)
         {
-            throw new SQLTransientConnectionException(e.getMessage());
+            throw new SQLTransientConnectionException(e);
         }
         catch (SchemaDisagreementException e)
         {
@@ -193,7 +193,7 @@ class CassandraStatement extends AbstractStatement implements Statement, Compara
         }
         catch (TException e)
         {
-            throw new SQLNonTransientConnectionException(e.getMessage());
+            throw new SQLNonTransientConnectionException(e);
         }
 
     }
