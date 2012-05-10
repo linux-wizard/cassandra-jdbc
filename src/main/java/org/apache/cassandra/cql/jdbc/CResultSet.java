@@ -127,6 +127,13 @@ class CResultSet extends AbstractResultSet implements CassandraResultSet
 
         rSetIter = resultSet.getRowsIterator();
         meta = new CResultSetMetaData();
+        
+        //Most clients check metadata before results are read
+        //Load the first row, then reset iterator so metadata will return something
+        next(); 
+        rSetIter = resultSet.getRowsIterator();
+        rowNumber = 0;
+        
     }
 
     public boolean absolute(int arg0) throws SQLException
