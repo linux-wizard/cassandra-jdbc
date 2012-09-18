@@ -28,10 +28,12 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 
 import org.apache.cassandra.cql.ConnectionDetails;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class JdbcRegressionTest
@@ -95,7 +97,7 @@ public class JdbcRegressionTest
     }
 
 
-
+//    @Ignore
     @Test
     public void testIssue10() throws Exception
     {
@@ -119,6 +121,7 @@ public class JdbcRegressionTest
         assertEquals(2000, i);
    }
 
+    @Ignore
     @Test
     public void testIssue15() throws Exception
     {
@@ -134,6 +137,7 @@ public class JdbcRegressionTest
 
     }
     
+//    @Ignore
     @Test
     public void testIssue18() throws Exception
     {
@@ -181,6 +185,7 @@ public class JdbcRegressionTest
        }
     }
     
+//    @Ignore
     @Test
     public void testIssue33() throws Exception
     {
@@ -223,6 +228,60 @@ public class JdbcRegressionTest
             System.out.println();
         }
    }
+    
+    @Test
+    public void testIssue46() throws Exception
+    {
+        Statement stmt = con.createStatement();
+        
+        // Create the target Column family
+        String createCF = "CREATE COLUMNFAMILY t46 (k text PRIMARY KEY," 
+                        + "t text, "
+                        + "i int "
+                        + ") WITH comparator = ascii AND default_validation = text;";        
+        
+        stmt.execute(createCF);
+        stmt.close();
+        con.close();
+
+        // open it up again to see the new CF
+        con = DriverManager.getConnection(String.format("jdbc:cassandra://%s:%d/%s",HOST,PORT,KEYSPACE));
+        stmt = con.createStatement();
+
+        String insert1 = "INSERT INTO t46 (k,t,i) VALUES( 'key0','Just Text', 2000);";
+        
+        stmt.executeUpdate(insert1);
+        
+        String insert2 = "INSERT INTO t46 (k,t,i) VALUES(?,?,? );";
+        
+        PreparedStatement pstmt = con.prepareStatement(insert2);
+        pstmt.setString(1, "key1");
+        pstmt.setString(2, "Some More Text");
+        pstmt.setNull(3, Types.INTEGER);
+        pstmt.execute();
+        
+        ResultSet result = stmt.executeQuery("SELECT * FROM t46;");
+        
+        ResultSetMetaData metadata = result.getMetaData();
+        
+        int colCount = metadata.getColumnCount();
+        
+        System.out.println("Test Issue #46");
+        System.out.println("--------------");
+        while (result.next())
+        {
+            metadata = result.getMetaData();
+            colCount = metadata.getColumnCount();
+            System.out.printf("(%d) ",result.getRow());
+            for (int i = 1; i <= colCount; i++)
+            {
+                System.out.print(showColumn(i,result)+ " "); 
+            }
+            System.out.println();
+        }
+
+        
+    } 
     
     
     private final String  showColumn(int index, ResultSet result) throws SQLException
