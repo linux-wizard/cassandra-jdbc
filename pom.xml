@@ -291,6 +291,71 @@ under the License.
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-javadocs-package</id>
+						<!-- Run javadoc.jar compilation at package -->
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>attach-javadocs-deploy</id>
+						<!-- Run javadoc.jar compilation at deploy -->
+						<phase>deploy</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-source-package</id>
+						<!-- Run source compilation at package. -->
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>attach-source-deploy</id>
+						<!-- Run source compilation at deploy. -->
+						<phase>deploy</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>1.4</version>
+				<executions>
+				  <execution>
+					<id>sign-artifacts-package</id>
+					<phase>verify</phase>
+					<goals>
+					  <goal>sign</goal>
+					</goals>
+				  </execution>
+				  <execution>
+					<id>sign-artifacts-deploy</id>
+					<phase>deploy</phase>
+					<goals>
+					  <goal>sign</goal>
+					</goals>
+				  </execution>
+				</executions>
+		  </plugin>
         </plugins>
     </build>
 
