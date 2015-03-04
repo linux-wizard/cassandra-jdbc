@@ -440,13 +440,29 @@ class ManagedConnection extends AbstractConnection implements Connection
 
 	@Override
 	public String getSchema() throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		checkNotClosed();
+		try
+		{
+			return physicalConnection.getSchema();
+		}
+		catch (SQLException sqlException)
+		{
+			pooledCassandraConnection.connectionErrorOccurred(sqlException);
+			throw sqlException;
+		}
 	}
 
 	@Override
-	public void setSchema(String arg0) throws SQLException {
-		// TODO Auto-generated method stub
-		
+	public void setSchema(String schema) throws SQLException {
+		checkNotClosed();
+		try
+		{
+			physicalConnection.setSchema(schema);
+		}
+		catch (SQLException sqlException)
+		{
+			pooledCassandraConnection.connectionErrorOccurred(sqlException);
+			throw sqlException;
+		}
 	}
 }
